@@ -16,19 +16,24 @@ type Service interface {
 	DeleteProduct(ctx context.Context, id string) error
 }
 
+type service struct {
+	db *gorm.DB
+}
+
+// NewService creates a new plain product service
+func NewService() Service {
+	return &service{}
+}
+
 // Product is a simple struct
 type Product struct {
-	ID          string  `json:"id"`
+	ID          string  `json:"id" gorm:"primary_key"`
 	Name        string  `json:"name"`
 	Price       float64 `json:"price"`
 	Description string  `json:"description"`
 	// i could create a seperate struct for this
 	Manufacturer string    `json:"manufacturer"`
 	DateAdded    time.Time `json:"dateAdded"`
-}
-
-type service struct {
-	db *gorm.DB
 }
 
 func (s *service) GetProducts(ctx context.Context) ([]Product, error) {
