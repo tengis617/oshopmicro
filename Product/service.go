@@ -2,16 +2,17 @@ package Product
 
 import (
 	"context"
-	"errors"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 // Service is a CRUD interface for products
 type Service interface {
 	GetProducts(ctx context.Context) ([]Product, error)
 	GetProduct(ctx context.Context, id string) (Product, error)
-	PostProduct(ctx context.Context, p Product) error
-	PutProduct(ctx context.Context, id string, p Product) error
+	CreateProduct(ctx context.Context, p Product) error
+	UpdateProduct(ctx context.Context, id string, p Product) error
 	DeleteProduct(ctx context.Context, id string) error
 }
 
@@ -26,8 +27,44 @@ type Product struct {
 	DateAdded    time.Time `json:"dateAdded"`
 }
 
-var (
-	ErrAlreadyExists  = errors.New("product already exists")
-	ErrInconsistentID = errors.New("inconstistent product IDs")
-	ErrNotFound       = errors.New("Product not found")
-)
+type service struct {
+	db *gorm.DB
+}
+
+func (s *service) GetProducts(ctx context.Context) ([]Product, error) {
+	var products []Product
+
+	if err := s.db.Find(&products).Error; err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
+func (s *service) GetProduct(ctx context.Context, id string) (Product, error) {
+	var p Product
+	if err := s.db.First(&p, id).Error; err != nil {
+		return Product{}, err
+	}
+	return p, nil
+}
+
+func (s *service) CreateProduct(ctx context.Context, p Product) error {
+	if err := s.db.Create(&p).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *service) UpdateProduct(ctx context.Context, id string, p Product) error {
+	if err := s.db.Model(&p).Where("ID = ?", id).Update(p).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (s *service) DeleteProduct(ctx context.Context, id string) error {
+	if err := s.db.Delete(Product{}, "ID = ?", id).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
