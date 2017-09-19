@@ -1,0 +1,1 @@
+# OSHOPMICRO - a test application using microservices
