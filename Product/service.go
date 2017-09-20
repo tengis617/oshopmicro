@@ -21,8 +21,10 @@ type service struct {
 }
 
 // NewService creates a new plain product service
-func NewService() Service {
-	return &service{}
+func NewService(db *gorm.DB) Service {
+	return &service{
+		db: db,
+	}
 }
 
 // Product is a simple struct
@@ -54,6 +56,7 @@ func (s *service) GetProduct(ctx context.Context, id string) (Product, error) {
 }
 
 func (s *service) CreateProduct(ctx context.Context, p Product) error {
+	
 	if err := s.db.Create(&p).Error; err != nil {
 		return err
 	}
