@@ -5,4 +5,4 @@ This is meant to help me discover, learn, and implement microservices using gola
 To have a fully production ready online shopping web application backend with multiple microservices.
 
 ### Note:
-Full credits to examples provided on the gokit.io website
+Full credits to examples provided on the gokit.io website and ru-rocker.com for providing an awesome tut for using gokit with grcp
